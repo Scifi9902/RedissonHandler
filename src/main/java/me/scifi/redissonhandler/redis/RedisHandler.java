@@ -19,29 +19,29 @@ public class RedisHandler {
     private int port;
 
     public RedisHandler(String host, String password, String channel, int port){
-        setHost(host);
-        setPassword(password);
-        setChannel(channel);
-        setPort(port);
+        this.host = host;
+        this.password = password;
+        this.channel = channel;
+        this.port = port;
     }
 
-    public void connect(){
+    public RedisHandler connect(){
         config = new org.redisson.config.Config();
         config.useSingleServer().setAddress(host + ":" + port);
-        if(!password.isEmpty()) config.useSingleServer().setPassword(password);
-        setClient(Redisson.create(config));
+        if(!password.isEmpty())
+            config.useSingleServer().setPassword(password);
+        this.client = Redisson.create(config);
+        
+        return this;
     }
 
-    public void subscribe(String channel){
-        RTopic<Packet> topic = client.getTopic(channel);
-        topic.addListener((c, packet) -> {
-            packet.onReceive();
-        });
+    public RedisHandler subscribe(String channel){
+        ((RTopic<Packet>) client.getTopic(channel)).addListener((c, packet) -> packet.onReceive());
+        return this;
     }
 
     public void publish(String channel, Packet packet){
-        RTopic<Packet> topic = client.getTopic(channel);
-        topic.publish(packet);
+        ((RTopic<Packet>) client.getTopic(channel)).publish(packet);
         packet.onSend();
     }
 
