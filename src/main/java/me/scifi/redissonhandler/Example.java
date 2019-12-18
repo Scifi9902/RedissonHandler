@@ -15,9 +15,9 @@ public class Example extends JavaPlugin {
 
     public void onEnable(){
         instance = this;
-        redisHandler = new RedisHandler("127.0.0.1", "url33tpassword", "redis", 6379);
-        redisHandler.connect();
-        redisHandler.subscribe("redis");
+        redisHandler = new RedisHandler("127.0.0.1", "url33tpassword", "redis", 6379)
+           .connect().subscribe("redis");
+
         Bukkit.getServer().getPluginManager().registerEvents(new ChatListener(),this);
     }
 
